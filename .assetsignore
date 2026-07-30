@@ -1,0 +1,6 @@
+wrangler.toml
+README.md
+CNAME
+.nojekyll
+.git
+.git/**
