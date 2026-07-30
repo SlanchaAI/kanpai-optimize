@@ -196,8 +196,8 @@
 
 <section class="hero" id="top">
   <div class="hero-inner">
-    <span class="plate-label">Plate I · The Instrument</span>
-    <h1>Bring us your most <em>expensive</em> model that isn’t a language model.</h1>
+    <span class="plate-label">Plate I · The Signal</span>
+    <h1>Bring us the models <em>nobody</em> watches.</h1>
     <p class="descriptor">Slancha optimizes production inference beyond LLMs — speech, vision, image, video, and document models. We lower cost per verified outcome without lowering the outcome rate.</p>
     <p class="proofline">One pipeline. One metric. One shipped improvement.</p>
     <div class="offer-terms"><span>21 days</span><span>$15,000 fixed</span><span>One pipeline</span></div>
@@ -216,7 +216,7 @@
         <p>ML teams shrink models. Infrastructure teams raise utilization. Product teams raise acceptance. Operations cuts turnaround. Finance cuts budgets. Each team can win while the whole system gets worse — because no one owns the denominator that crosses their boundaries.</p>
       </div>
       <figure class="loop-figure">
-        <svg viewBox="0 0 420 320" role="img" aria-label="Total spend over one verified outcome: the denominator no team owns">
+        <svg viewBox="0 0 420 320" role="img" aria-label="Total spend over one accepted result: the denominator no team owns">
           <g stroke="#c8a24a" stroke-opacity=".45" stroke-width="1">
             <line x1="80" y1="118" x2="80" y2="136"/><line x1="96" y1="122" x2="96" y2="136"/><line x1="112" y1="118" x2="112" y2="136"/><line x1="128" y1="122" x2="128" y2="136"/><line x1="144" y1="118" x2="144" y2="136"/><line x1="160" y1="122" x2="160" y2="136"/><line x1="176" y1="118" x2="176" y2="136"/><line x1="192" y1="122" x2="192" y2="136"/><line x1="208" y1="118" x2="208" y2="136"/><line x1="224" y1="122" x2="224" y2="136"/><line x1="240" y1="118" x2="240" y2="136"/><line x1="256" y1="122" x2="256" y2="136"/><line x1="272" y1="118" x2="272" y2="136"/><line x1="288" y1="122" x2="288" y2="136"/><line x1="304" y1="118" x2="304" y2="136"/><line x1="320" y1="122" x2="320" y2="136"/><line x1="336" y1="118" x2="336" y2="136"/>
           </g>
@@ -230,7 +230,7 @@
           <circle cx="210" cy="200" r="7" fill="#c8a24a"/>
           <circle cx="210" cy="200" r="14" fill="none" stroke="#c8a24a" stroke-opacity=".35"/>
           <text x="210" y="100" text-anchor="middle">TOTAL SPEND</text>
-          <text x="210" y="248" text-anchor="middle">ONE VERIFIED OUTCOME</text>
+          <text x="210" y="248" text-anchor="middle">ONE ACCEPTED RESULT</text>
           <text class="center-label" x="210" y="292" text-anchor="middle">FOUR TEAMS PULL. NO ONE OWNS IT.</text>
         </svg>
         <figcaption>Fig. 2 · the unowned denominator</figcaption>
@@ -408,108 +408,71 @@ if (renderer) {
   const BASE_Z = 4.6;
   camera.position.set(0, 0, BASE_Z);
 
-  // Materials (fog-aware line + point materials)
-  const lineMat  = new THREE.LineBasicMaterial({ color: BRONZE, transparent: true, opacity: 0.5,  fog: true });
-  const lineDim  = new THREE.LineBasicMaterial({ color: BRONZE, transparent: true, opacity: 0.22, fog: true });
-  const lineInk  = new THREE.LineBasicMaterial({ color: INK,    transparent: true, opacity: 0.16, fog: true });
+  const coreLine = new THREE.LineBasicMaterial({ color: BRONZE, transparent: true, opacity: 0.6,  fog: true });
+  const midLine  = new THREE.LineBasicMaterial({ color: BRONZE, transparent: true, opacity: 0.28, fog: true });
+  const farLine  = new THREE.LineBasicMaterial({ color: INK,    transparent: true, opacity: 0.12, fog: true });
+  const ruleLine = new THREE.LineBasicMaterial({ color: BRONZE, transparent: true, opacity: 0.45, fog: true });
   const nodeMat  = new THREE.PointsMaterial({ color: BRONZE, size: 0.035, transparent: true, opacity: 0.95, fog: true });
   const dustMat  = new THREE.PointsMaterial({ color: BRONZE, size: 0.016, transparent: true, opacity: 0.4,  fog: true });
 
-  // --- helpers -------------------------------------------------------------
-  function ringLoop(radius, segments) {
-    const pts = [];
-    for (let i = 0; i < segments; i++) {
-      const a = (i / segments) * Math.PI * 2;
-      pts.push(new THREE.Vector3(Math.cos(a) * radius, 0, Math.sin(a) * radius));
-    }
-    const geo = new THREE.BufferGeometry().setFromPoints(pts);
-    return new THREE.LineLoop(geo, lineMat);
-  }
-
-  // Graduation ticks around a ring, in its own plane (y = 0)
-  function graduations(radius, count, innerLen, majorEvery, majorLen) {
-    const pos = [];
-    for (let i = 0; i < count; i++) {
-      const a = (i / count) * Math.PI * 2;
-      const len = (i % majorEvery === 0) ? majorLen : innerLen;
-      const c = Math.cos(a), s = Math.sin(a);
-      pos.push(c * (radius - len), 0, s * (radius - len));
-      pos.push(c * radius, 0, s * radius);
-    }
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-    return new THREE.LineSegments(geo, lineMat);
-  }
-
-  function nodePoints(radius, count) {
-    const pos = [];
-    for (let i = 0; i < count; i++) {
-      const a = (i / count) * Math.PI * 2;
-      pos.push(Math.cos(a) * radius, 0, Math.sin(a) * radius);
-    }
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-    return new THREE.Points(geo, nodeMat);
-  }
-
-  // --- the instrument ------------------------------------------------------
+  // --- the oscillograph: a ridgeline field of signal traces -----------------
   const instrument = new THREE.Group();
+  instrument.rotation.x = 0.46; // read the field like a chart recorder plate
   scene.add(instrument);
 
-  // Gimbal A: outer graduated ring, horizontal
-  const gimbalA = new THREE.Group();
-  gimbalA.add(ringLoop(1.72, 160));
-  gimbalA.add(graduations(1.72, 60, 0.05, 5, 0.12));
-  gimbalA.add(nodePoints(1.72, 12));
-  instrument.add(gimbalA);
-
-  // Gimbal B: middle ring, tilted
-  const gimbalB = new THREE.Group();
-  const rb = ringLoop(1.38, 140);
-  gimbalB.add(rb);
-  gimbalB.add(graduations(1.38, 36, 0.04, 6, 0.1));
-  gimbalB.add(nodePoints(1.38, 6));
-  gimbalB.rotation.x = Math.PI / 2.6;
-  instrument.add(gimbalB);
-
-  // Gimbal C: inner ring pair, steeper tilt
-  const gimbalC = new THREE.Group();
-  gimbalC.add(ringLoop(1.06, 120));
-  const rc2 = ringLoop(1.06, 120);
-  rc2.rotation.z = Math.PI / 2;
-  gimbalC.add(rc2);
-  gimbalC.add(nodePoints(1.06, 6));
-  gimbalC.rotation.set(Math.PI / 3.4, 0, Math.PI / 5);
-  instrument.add(gimbalC);
-
-  // Meridian cage (dim ink great circles about the polar axis)
-  const cage = new THREE.Group();
-  for (let m = 0; m < 4; m++) {
-    const mer = ringLoop(1.55, 120);
-    mer.material = lineInk;
-    mer.rotation.x = Math.PI / 2;
-    mer.rotation.y = (m / 4) * Math.PI;
-    cage.add(mer);
+  const ROWS = 26, PTS = 140, SPAN = 4.4, CENTER = (ROWS - 1) / 2;
+  const traces = [];
+  for (let j = 0; j < ROWS; j++) {
+    const pos = new Float32Array(PTS * 3);
+    const z = (j - CENTER) * 0.13;
+    for (let i = 0; i < PTS; i++) {
+      pos[i * 3] = -SPAN / 2 + (i / (PTS - 1)) * SPAN;
+      pos[i * 3 + 1] = 0;
+      pos[i * 3 + 2] = z;
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    const d = Math.abs(j - CENTER);
+    const mat = d <= 3 ? coreLine : d <= 8 ? midLine : farLine;
+    instrument.add(new THREE.Line(geo, mat));
+    traces.push({ geo, j });
   }
-  instrument.add(cage);
 
-  // Polar axis rod with end caps
-  const axisGeo = new THREE.BufferGeometry().setFromPoints([
-    new THREE.Vector3(0, -2.05, 0), new THREE.Vector3(0, 2.05, 0)
-  ]);
-  instrument.add(new THREE.Line(axisGeo, lineDim));
+  // amplitude of the field at (x, row, time)
+  function signalY(x, j, t) {
+    const env = Math.exp(-(x * x) / 1.5) * (1 - Math.abs(j - CENTER) / (ROWS * 0.85));
+    return env * (
+      0.34 * Math.sin(2.6 * x + t * 0.9 + j * 0.35) +
+      0.2  * Math.sin(5.3 * x - t * 0.6 + j * 0.13) +
+      0.12 * Math.sin(9.1 * x + t * 0.35 + j * 0.05)
+    );
+  }
+  function shapeTraces(t) {
+    for (const { geo, j } of traces) {
+      const a = geo.attributes.position;
+      for (let i = 0; i < PTS; i++) a.array[i * 3 + 1] = signalY(a.array[i * 3], j, t);
+      a.needsUpdate = true;
+    }
+  }
+
+  // graduated baseline rule under the field, with end nodes
+  const RULE_Y = -0.85, RULE_Z = (ROWS - CENTER) * 0.13 + 0.2;
+  const rulePos = [-SPAN / 2 - 0.2, RULE_Y, RULE_Z, SPAN / 2 + 0.2, RULE_Y, RULE_Z];
+  for (let i = 0; i <= 40; i++) {
+    const x = -SPAN / 2 + (i / 40) * SPAN;
+    const len = i % 5 === 0 ? 0.12 : 0.05;
+    rulePos.push(x, RULE_Y, RULE_Z, x, RULE_Y - len, RULE_Z);
+  }
+  const ruleGeo = new THREE.BufferGeometry();
+  ruleGeo.setAttribute('position', new THREE.Float32BufferAttribute(rulePos, 3));
+  instrument.add(new THREE.LineSegments(ruleGeo, ruleLine));
   const capGeo = new THREE.BufferGeometry();
-  capGeo.setAttribute('position', new THREE.Float32BufferAttribute([0, 2.05, 0, 0, -2.05, 0, 0, 0, 0], 3));
+  capGeo.setAttribute('position', new THREE.Float32BufferAttribute([
+    -SPAN / 2 - 0.2, RULE_Y, RULE_Z, SPAN / 2 + 0.2, RULE_Y, RULE_Z, 0, RULE_Y, RULE_Z
+  ], 3));
   instrument.add(new THREE.Points(capGeo, nodeMat));
 
-  // Central core: small octahedron wireframe
-  const core = new THREE.LineSegments(
-    new THREE.EdgesGeometry(new THREE.OctahedronGeometry(0.34)),
-    lineMat
-  );
-  instrument.add(core);
-
-  // Dust field: shell of drifting particles
+  // dust field
   const DUST_N = 900;
   const dustPos = new Float32Array(DUST_N * 3);
   for (let i = 0; i < DUST_N; i++) {
@@ -525,10 +488,9 @@ if (renderer) {
   const dust = new THREE.Points(dustGeo, dustMat);
   scene.add(dust);
 
-  // Offset instrument right of hero copy on wide screens
   function placeInstrument() {
     const wide = window.innerWidth > 860;
-    instrument.position.x = wide ? 1.15 : 0;
+    instrument.position.x = wide ? 1.05 : 0;
     dust.position.x = instrument.position.x;
     instrument.scale.setScalar(wide ? 1 : 0.78);
   }
@@ -547,7 +509,7 @@ if (renderer) {
   function readScroll() {
     scrollP = Math.min(window.scrollY / Math.max(window.innerHeight, 1), 1);
     stage.style.opacity = String(1 - scrollP * scrollP);
-    if (!reduced && scrollP < 0.999) start(); // re-arm when hero comes back
+    if (!reduced && scrollP < 0.999) start();
   }
   window.addEventListener('scroll', readScroll, { passive: true });
 
@@ -561,13 +523,11 @@ if (renderer) {
   });
 
   // --- animation loop ------------------------------------------------------
-  // Single-loop lifecycle: the loop stops itself when hidden or fully
-  // scrolled past, and only start() may schedule a frame.
   let rafId = 0, running = false;
   function start() {
     if (running) return;
     running = true;
-    clock.getDelta(); // swallow time accumulated while stopped
+    clock.getDelta();
     rafId = requestAnimationFrame(tick);
   }
   document.addEventListener('visibilitychange', () => {
@@ -586,23 +546,16 @@ if (renderer) {
     rafId = requestAnimationFrame(tick);
 
     t += Math.min(clock.getDelta(), 0.05);
+    shapeTraces(t);
 
-    // slow two-axis rotation, precise and calm
-    instrument.rotation.y = t * 0.09;
-    instrument.rotation.x = Math.sin(t * 0.05) * 0.14;
-    gimbalB.rotation.z = t * 0.16;
-    gimbalC.rotation.y = -t * 0.12;
-    core.rotation.y = -t * 0.2;
-    core.rotation.x = t * 0.11;
+    instrument.rotation.y = Math.sin(t * 0.05) * 0.2;
     dust.rotation.y = t * 0.008;
 
-    // mouse-tilt parallax, eased
-    tiltX += (mouseY * 0.12 - tiltX) * 0.04;
-    tiltY += (mouseX * 0.18 - tiltY) * 0.04;
-    instrument.rotation.x += tiltX;
+    tiltX += (mouseY * 0.1 - tiltX) * 0.04;
+    tiltY += (mouseX * 0.16 - tiltY) * 0.04;
+    instrument.rotation.x = 0.46 + tiltX;
     instrument.rotation.y += tiltY;
 
-    // scroll: the instrument recedes into the fog
     camera.position.z = BASE_Z + scrollP * 4.6;
     camera.position.y = scrollP * -0.6;
 
@@ -616,13 +569,12 @@ if (renderer) {
   });
 
   if (reduced) {
-    // static frame: composed pose, no loop
-    instrument.rotation.set(0.32, 0.7, 0);
-    gimbalB.rotation.z = 0.9;
-    gimbalC.rotation.y = -0.5;
+    shapeTraces(1.7); // one composed frame of the field
+    instrument.rotation.y = 0.12;
     readScroll();
     renderer.render(scene, camera);
   } else {
+    shapeTraces(0);
     readScroll();
   }
 }
