@@ -12,3 +12,5 @@ PRODUCT.md
 .wrangler/**
 .DS_Store
 vendor/three.module.min.js
+.tumble-dry
+.tumble-dry/**
