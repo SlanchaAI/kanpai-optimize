@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Slancha — Production AI, Optimized</title>
+<meta name="description" content="Slancha optimizes production AI. The Production AI Optimization Sprint: 21 days, $15,000 fixed, one workflow — lower cost per verified outcome without lowering the outcome rate.">
+<link rel="canonical" href="https://optimize.kanpai.run/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://optimize.kanpai.run/">
+<meta property="og:title" content="Slancha — Production AI, Optimized">
+<meta property="og:description" content="The Production AI Optimization Sprint: 21 days, $15,000 fixed, one workflow. One shipped improvement, graded against a preregistered baseline.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2314100c'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23c8a24a' stroke-width='2'/%3E%3Ccircle cx='16' cy='6' r='2.5' fill='%23c8a24a'/%3E%3C/svg%3E">
+<link rel="modulepreload" href="./vendor/three-slim.module.js">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -33,7 +41,7 @@
     overflow-x:hidden;
   }
   a{color:inherit;text-decoration:none}
-  a:focus-visible,button:focus-visible{outline:1px solid var(--bronze);outline-offset:4px}
+  a:focus-visible{outline:1px solid var(--bronze);outline-offset:4px}
   ::selection{background:var(--bronze);color:var(--bg)}
 
   /* ---------- canvas stage ---------- */
@@ -53,13 +61,13 @@
   .masthead nav a{color:var(--ink-dim);text-transform:uppercase;letter-spacing:.18em;transition:color .25s}
   .masthead nav a:hover{color:var(--bronze)}
   @media (max-width:640px){
-    .masthead{flex-direction:column;gap:.55rem;align-items:flex-start;padding:.9rem 1.25rem}
-    .masthead{font-size:.62rem}
+    .masthead{flex-direction:column;gap:.55rem;align-items:flex-start;padding:.9rem 1.25rem;font-size:.62rem;background:var(--bg)}
   }
 
   /* ---------- hero ---------- */
   .hero{
     position:relative;z-index:10;
+    min-height:100vh;
     min-height:100svh;
     display:flex;flex-direction:column;justify-content:center;
     padding:6rem clamp(1.25rem,4vw,3rem) 4rem;
@@ -85,6 +93,7 @@
     color:var(--ink-dim);text-transform:uppercase;
     border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline);
     padding:.85rem 0;margin-bottom:2.4rem;max-width:30rem;
+    text-wrap:balance;
   }
   .cta{
     display:inline-block;
@@ -96,13 +105,6 @@
   .cta:hover{background:var(--ink)}
   .cta.ghost{color:var(--bronze);background:transparent;border:1px solid var(--bronze)}
   .cta.ghost:hover{color:var(--bg);background:var(--bronze)}
-  .hero-readout{
-    position:absolute;right:clamp(1.25rem,4vw,3rem);bottom:2rem;
-    font-family:var(--mono);font-size:.6rem;letter-spacing:.22em;
-    color:var(--bronze-dim);text-transform:uppercase;text-align:right;line-height:2;
-  }
-  @media (max-width:720px){.hero-readout{display:none}}
-
   /* ---------- content sections ---------- */
   main{position:relative;z-index:10}
   .sheet{background:var(--bg);box-shadow:0 -60px 80px rgba(20,16,12,.9)}
@@ -110,6 +112,7 @@
     max-width:64rem;margin:0 auto;
     padding:clamp(4rem,9vw,7.5rem) clamp(1.25rem,4vw,3rem);
     border-top:1px solid var(--hairline);
+    scroll-margin-top:5.5rem;
   }
   section.plate h2{
     font-family:var(--serif);font-weight:400;
@@ -130,8 +133,8 @@
   @keyframes rotor{to{transform:rotate(360deg)}}
   @media (prefers-reduced-motion:reduce){.loop-rotor{animation:none}}
   figcaption{
-    font-family:var(--mono);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;
-    color:var(--bronze-dim);text-align:center;margin-top:1.2rem;
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--bronze);text-align:center;margin-top:1.2rem;
   }
 
   /* offer */
@@ -151,26 +154,6 @@
   .offer-terms span{border-left:1px solid var(--hairline);padding-left:1rem}
   .offer-terms span:first-child{border-left:0;padding-left:0}
   .no-change{border-left:2px solid var(--red);padding-left:1.3rem}
-
-  /* proof scorecard */
-  .scorecard{
-    display:grid;grid-template-columns:repeat(3,1fr);
-    border:1px solid var(--hairline);margin-top:2.6rem;
-  }
-  .scorecard div{
-    padding:1.1rem 1rem 1rem;
-    border-right:1px solid var(--hairline);border-bottom:1px solid var(--hairline);
-  }
-  .scorecard div:nth-child(3n){border-right:0}
-  .scorecard div:nth-child(n+7){border-bottom:0}
-  @media (max-width:640px){
-    .scorecard{grid-template-columns:repeat(2,1fr)}
-    .scorecard div{border:0;border-bottom:1px solid var(--hairline)}
-    .scorecard div:nth-child(odd){border-right:1px solid var(--hairline)}
-    .scorecard div:nth-child(n+9){border-bottom:0}
-  }
-  .scorecard .tick{color:var(--bronze);font-family:var(--mono);font-size:.62rem;display:block;margin-bottom:.4rem}
-  .scorecard .term{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink)}
 
   /* contact */
   .contact-inner .cta{margin-bottom:2rem}
@@ -204,12 +187,14 @@
 
 <header class="masthead">
   <a class="mark" href="#top">SLANCHA / PRODUCTION AI</a>
-  <nav>
+  <nav aria-label="Site">
     <a href="#method">Method</a>
     <a href="#offer">Sprint</a>
     <a href="#contact">Start</a>
   </nav>
 </header>
+
+<main>
 
 <section class="hero" id="top">
   <div class="hero-inner">
@@ -217,16 +202,12 @@
     <h1>Bring us your most <em>expensive</em> production agent.</h1>
     <p class="descriptor">Slancha optimizes production AI. We lower cost per verified outcome without lowering the outcome rate.</p>
     <p class="proofline">One workflow. One metric. One shipped improvement.</p>
+    <div class="offer-terms"><span>21 days</span><span>$15,000 fixed</span><span>One workflow</span></div>
     <a class="cta" href="#contact">Start with one workflow</a>
-  </div>
-  <div class="hero-readout">
-    fog · 14 / 10 / 0c<br>
-    rotation · two-axis · slow<br>
-    graduation · 6°
   </div>
 </section>
 
-<main class="sheet">
+<div class="sheet">
 
   <section class="plate" id="problem">
     <span class="plate-label">Plate II · Problem</span>
@@ -261,8 +242,8 @@
               <line x1="116.5" y1="116" x2="123.4" y2="120"/>
               <line x1="156" y1="76.5" x2="160" y2="83.4"/>
             </g>
+            <path d="M 210 43 l 10 -5 l -3 5 l 3 5 z" fill="#c8a24a" fill-opacity=".8" transform="rotate(30 210 170)"/>
           </g>
-          <path d="M 210 43 l 10 -5 l -3 5 l 3 5 z" fill="#c8a24a" fill-opacity=".8" transform="rotate(30 210 170)"/>
           <g fill="#c8a24a">
             <circle cx="210" cy="55" r="3.2"/>
             <circle cx="309.6" cy="112.5" r="3.2"/>
@@ -296,7 +277,6 @@
   <section class="plate" id="offer">
     <span class="plate-label">Plate IV · Sprint</span>
     <h2>The Production AI Optimization Sprint.</h2>
-    <div class="offer-terms"><span>21 days</span><span>$15,000 fixed</span><span>One workflow</span></div>
     <p>21 days. $15,000, fixed. One production workflow. We establish its true cost per verified successful outcome, test a bounded set of changes, and ship one approved improvement when the evidence supports it.</p>
     <ul class="offer-list">
       <li><span class="tick" aria-hidden="true"></span><p>Preregistered baseline and evidence contract</p></li>
@@ -313,24 +293,13 @@
     <span class="plate-label">Plate V · Proof</span>
     <h2>How every engagement is graded.</h2>
     <p>This workflow cost X per successful outcome. Constraint Y caused the waste. We changed Z. The controlled result improved. The quality floor held. The change shipped. The realized result persisted. That grammar — baseline, denominator, outcome definition, quality floor, intervention, experiment design, rollback, forecast, realized — is the standard every engagement must meet.</p>
-    <div class="scorecard" role="list" aria-label="The grammar of an engagement">
-      <div role="listitem"><span class="tick" aria-hidden="true">·</span><span class="term">Baseline</span></div>
-      <div role="listitem"><span class="tick" aria-hidden="true">·</span><span class="term">Denominator</span></div>
-      <div role="listitem"><span class="tick" aria-hidden="true">·</span><span class="term">Outcome definition</span></div>
-      <div role="listitem"><span class="tick" aria-hidden="true">·</span><span class="term">Quality floor</span></div>
-      <div role="listitem"><span class="tick" aria-hidden="true">·</span><span class="term">Intervention</span></div>
-      <div role="listitem"><span class="tick" aria-hidden="true">·</span><span class="term">Experiment design</span></div>
-      <div role="listitem"><span class="tick" aria-hidden="true">·</span><span class="term">Rollback</span></div>
-      <div role="listitem"><span class="tick" aria-hidden="true">·</span><span class="term">Forecast</span></div>
-      <div role="listitem"><span class="tick" aria-hidden="true">·</span><span class="term">Realized</span></div>
-    </div>
   </section>
 
   <section class="plate" id="contact">
     <span class="plate-label">Plate VI · Start</span>
     <div class="contact-inner">
-      <a class="cta ghost" href="mailto:contact@slancha.ai?subject=Production%20AI%20Optimization%20Sprint">Start with one workflow</a>
-      <p class="contact-email">Write to us: <a href="mailto:contact@slancha.ai?subject=Production%20AI%20Optimization%20Sprint">contact@slancha.ai</a> — subject line: Production AI Optimization Sprint.</p>
+      <a class="cta ghost" href="mailto:pauljflogan@gmail.com?subject=Production%20AI%20Optimization%20Sprint">Start with one workflow</a>
+      <p class="contact-email">Write to Paul Logan: <a href="mailto:pauljflogan@gmail.com?subject=Production%20AI%20Optimization%20Sprint" aria-label="Email Paul Logan">pauljflogan@gmail.com</a> — subject line: Production AI Optimization Sprint.</p>
     </div>
   </section>
 
@@ -339,6 +308,8 @@
     <p class="coda-line">Optimize the planet. One measured loop at a time.</p>
   </section>
 
+</div>
+
 </main>
 
 <footer>
@@ -346,20 +317,21 @@
 </footer>
 
 <script type="module">
-import * as THREE from './vendor/three.module.min.js';
+import * as THREE from './vendor/three-slim.module.js';
 
 const stage = document.getElementById('stage');
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const finePointer = window.matchMedia('(pointer: fine)').matches;
 const BRONZE = 0xc8a24a;
 const INK = 0xece7de;
 
 let renderer = null;
 try {
-  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+  renderer = new THREE.WebGLRenderer({ antialias: finePointer, alpha: true, powerPreference: 'high-performance' });
 } catch (e) { renderer = null; }
 
 if (renderer) {
-  const DPR = Math.min(window.devicePixelRatio || 1, 2);
+  const DPR = Math.min(window.devicePixelRatio || 1, finePointer ? 2 : 1.5);
   renderer.setPixelRatio(DPR);
   renderer.setSize(window.innerWidth, window.innerHeight);
   stage.appendChild(renderer.domElement);
@@ -499,7 +471,7 @@ if (renderer) {
 
   // --- interaction state ---------------------------------------------------
   let mouseX = 0, mouseY = 0, tiltX = 0, tiltY = 0;
-  if (!reduced) {
+  if (!reduced && finePointer) {
     window.addEventListener('pointermove', (e) => {
       mouseX = (e.clientX / window.innerWidth) * 2 - 1;
       mouseY = (e.clientY / window.innerHeight) * 2 - 1;
@@ -510,8 +482,8 @@ if (renderer) {
   function readScroll() {
     scrollP = Math.min(window.scrollY / Math.max(window.innerHeight, 1), 1);
     stage.style.opacity = String(1 - scrollP * scrollP);
+    if (!reduced && scrollP < 0.999) start(); // re-arm when hero comes back
   }
-  readScroll();
   window.addEventListener('scroll', readScroll, { passive: true });
 
   window.addEventListener('resize', () => {
@@ -519,23 +491,36 @@ if (renderer) {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     placeInstrument();
+    readScroll();
     if (reduced) renderer.render(scene, camera);
   });
 
   // --- animation loop ------------------------------------------------------
-  let hidden = document.hidden;
+  // Single-loop lifecycle: the loop stops itself when hidden or fully
+  // scrolled past, and only start() may schedule a frame.
+  let rafId = 0, running = false;
+  function start() {
+    if (running) return;
+    running = true;
+    clock.getDelta(); // swallow time accumulated while stopped
+    rafId = requestAnimationFrame(tick);
+  }
   document.addEventListener('visibilitychange', () => {
-    hidden = document.hidden;
-    if (!hidden && !reduced) requestAnimationFrame(tick);
+    if (document.hidden) {
+      cancelAnimationFrame(rafId);
+      running = false;
+    } else if (!reduced) {
+      readScroll();
+    }
   });
 
   const clock = new THREE.Clock();
+  let t = 0;
   function tick() {
-    if (hidden) return;
-    requestAnimationFrame(tick);
-    if (scrollP >= 0.999) return; // instrument fully receded; skip render
+    if (document.hidden || scrollP >= 0.999) { running = false; return; }
+    rafId = requestAnimationFrame(tick);
 
-    const t = clock.getElapsedTime();
+    t += Math.min(clock.getDelta(), 0.05);
 
     // slow two-axis rotation, precise and calm
     instrument.rotation.y = t * 0.09;
@@ -559,14 +544,21 @@ if (renderer) {
     renderer.render(scene, camera);
   }
 
+  renderer.domElement.addEventListener('webglcontextlost', (e) => e.preventDefault());
+  renderer.domElement.addEventListener('webglcontextrestored', () => {
+    if (reduced) renderer.render(scene, camera);
+    else { running = false; readScroll(); }
+  });
+
   if (reduced) {
     // static frame: composed pose, no loop
     instrument.rotation.set(0.32, 0.7, 0);
     gimbalB.rotation.z = 0.9;
     gimbalC.rotation.y = -0.5;
+    readScroll();
     renderer.render(scene, camera);
   } else {
-    requestAnimationFrame(tick);
+    readScroll();
   }
 }
 </script>

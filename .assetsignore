@@ -5,3 +5,10 @@ CNAME
 .git
 .git/**
 vendor/three.module.js
+PRODUCT.md
+.impeccable
+.impeccable/**
+.wrangler
+.wrangler/**
+.DS_Store
+vendor/three.module.min.js
