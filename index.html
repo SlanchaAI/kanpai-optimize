@@ -1,16 +1,574 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="icon" href="data:,">
-<title>Optimize Kanpai</title>
-<meta name="description" content="An agent-authored portfolio site.">
-  <script type="module" crossorigin src="/assets/index.html-BCmAFLWS.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-Bs6vjPaM.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slancha — Production AI, Optimized</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#14100c;
+    --ink:#ece7de;
+    --ink-dim:rgba(236,231,222,.62);
+    --bronze:#c8a24a;
+    --bronze-dim:rgba(200,162,74,.38);
+    --hairline:rgba(200,162,74,.22);
+    --red:#c2543a;
+    --mono:"IBM Plex Mono",ui-monospace,monospace;
+    --grot:"Archivo",system-ui,sans-serif;
+    --serif:"Instrument Serif",Georgia,serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--grot);
+    font-size:17px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none}
+  a:focus-visible,button:focus-visible{outline:1px solid var(--bronze);outline-offset:4px}
+  ::selection{background:var(--bronze);color:var(--bg)}
+
+  /* ---------- canvas stage ---------- */
+  #stage{position:fixed;inset:0;z-index:0;pointer-events:none}
+  #stage canvas{display:block;width:100%;height:100%}
+
+  /* ---------- masthead ---------- */
+  .masthead{
+    position:fixed;top:0;left:0;right:0;z-index:40;
+    display:flex;justify-content:space-between;align-items:baseline;
+    padding:1.1rem clamp(1.25rem,4vw,3rem);
+    font-family:var(--mono);font-size:.68rem;letter-spacing:.18em;
+    background:linear-gradient(to bottom,rgba(20,16,12,.94),rgba(20,16,12,0));
+  }
+  .masthead .mark{color:var(--bronze)}
+  .masthead nav{display:flex;gap:clamp(1rem,3vw,2.5rem)}
+  .masthead nav a{color:var(--ink-dim);text-transform:uppercase;letter-spacing:.18em;transition:color .25s}
+  .masthead nav a:hover{color:var(--bronze)}
+  @media (max-width:640px){
+    .masthead{flex-direction:column;gap:.55rem;align-items:flex-start;padding:.9rem 1.25rem}
+    .masthead{font-size:.62rem}
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative;z-index:10;
+    min-height:100svh;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:6rem clamp(1.25rem,4vw,3rem) 4rem;
+  }
+  .hero-inner{max-width:36rem}
+  .plate-label{
+    font-family:var(--mono);font-size:.66rem;letter-spacing:.26em;
+    text-transform:uppercase;color:var(--bronze);
+    display:flex;align-items:center;gap:.9rem;
+    margin-bottom:1.6rem;
+  }
+  .plate-label::after{content:"";flex:0 0 3.2rem;height:1px;background:var(--bronze-dim)}
+  .hero h1{
+    font-family:var(--serif);font-weight:400;
+    font-size:clamp(2.5rem,6.4vw,4.6rem);
+    line-height:1.04;letter-spacing:-.01em;
+    margin-bottom:1.6rem;
+  }
+  .hero h1 em{font-style:italic;color:var(--bronze)}
+  .hero .descriptor{color:var(--ink-dim);max-width:30rem;margin-bottom:2.2rem}
+  .proofline{
+    font-family:var(--mono);font-size:.68rem;letter-spacing:.24em;
+    color:var(--ink-dim);text-transform:uppercase;
+    border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline);
+    padding:.85rem 0;margin-bottom:2.4rem;max-width:30rem;
+  }
+  .cta{
+    display:inline-block;
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--bg);background:var(--bronze);
+    padding:1rem 1.7rem;
+    transition:background .25s,color .25s;
+  }
+  .cta:hover{background:var(--ink)}
+  .cta.ghost{color:var(--bronze);background:transparent;border:1px solid var(--bronze)}
+  .cta.ghost:hover{color:var(--bg);background:var(--bronze)}
+  .hero-readout{
+    position:absolute;right:clamp(1.25rem,4vw,3rem);bottom:2rem;
+    font-family:var(--mono);font-size:.6rem;letter-spacing:.22em;
+    color:var(--bronze-dim);text-transform:uppercase;text-align:right;line-height:2;
+  }
+  @media (max-width:720px){.hero-readout{display:none}}
+
+  /* ---------- content sections ---------- */
+  main{position:relative;z-index:10}
+  .sheet{background:var(--bg);box-shadow:0 -60px 80px rgba(20,16,12,.9)}
+  section.plate{
+    max-width:64rem;margin:0 auto;
+    padding:clamp(4rem,9vw,7.5rem) clamp(1.25rem,4vw,3rem);
+    border-top:1px solid var(--hairline);
+  }
+  section.plate h2{
+    font-family:var(--serif);font-weight:400;
+    font-size:clamp(1.9rem,4vw,3rem);
+    line-height:1.1;margin-bottom:1.8rem;max-width:34rem;
+  }
+  section.plate p{color:var(--ink-dim);max-width:38rem;margin-bottom:1.3rem}
+  section.plate p:last-child{margin-bottom:0}
+
+  /* method layout */
+  .method-grid{display:grid;grid-template-columns:1fr minmax(280px,420px);gap:clamp(2rem,5vw,5rem);align-items:center}
+  @media (max-width:860px){.method-grid{grid-template-columns:1fr}}
+  .loop-figure{width:100%;max-width:420px;margin:0 auto}
+  .loop-figure svg{width:100%;height:auto;display:block}
+  .loop-figure text{font-family:var(--mono);font-size:11px;letter-spacing:2.2px;fill:var(--ink)}
+  .loop-figure .center-label{fill:var(--bronze);font-size:8.5px;letter-spacing:1.8px}
+  .loop-rotor{transform-origin:210px 170px;animation:rotor 90s linear infinite}
+  @keyframes rotor{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion:reduce){.loop-rotor{animation:none}}
+  figcaption{
+    font-family:var(--mono);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--bronze-dim);text-align:center;margin-top:1.2rem;
+  }
+
+  /* offer */
+  .offer-list{list-style:none;margin:2.4rem 0;border-top:1px solid var(--hairline);max-width:38rem}
+  .offer-list li{
+    display:grid;grid-template-columns:2rem 1fr;gap:1rem;
+    padding:1rem 0;border-bottom:1px solid var(--hairline);
+    align-items:baseline;
+  }
+  .offer-list .tick{display:block;width:1.1rem;height:1px;background:var(--bronze);transform:translateY(-.3em)}
+  .offer-list p{margin:0;color:var(--ink);max-width:none}
+  .offer-terms{
+    display:flex;gap:clamp(1.5rem,4vw,3.5rem);flex-wrap:wrap;
+    font-family:var(--mono);font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--bronze);margin-bottom:2rem;
+  }
+  .offer-terms span{border-left:1px solid var(--hairline);padding-left:1rem}
+  .offer-terms span:first-child{border-left:0;padding-left:0}
+  .no-change{border-left:2px solid var(--red);padding-left:1.3rem}
+
+  /* proof scorecard */
+  .scorecard{
+    display:grid;grid-template-columns:repeat(3,1fr);
+    border:1px solid var(--hairline);margin-top:2.6rem;
+  }
+  .scorecard div{
+    padding:1.1rem 1rem 1rem;
+    border-right:1px solid var(--hairline);border-bottom:1px solid var(--hairline);
+  }
+  .scorecard div:nth-child(3n){border-right:0}
+  .scorecard div:nth-child(n+7){border-bottom:0}
+  @media (max-width:640px){
+    .scorecard{grid-template-columns:repeat(2,1fr)}
+    .scorecard div{border:0;border-bottom:1px solid var(--hairline)}
+    .scorecard div:nth-child(odd){border-right:1px solid var(--hairline)}
+    .scorecard div:nth-child(n+9){border-bottom:0}
+  }
+  .scorecard .tick{color:var(--bronze);font-family:var(--mono);font-size:.62rem;display:block;margin-bottom:.4rem}
+  .scorecard .term{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink)}
+
+  /* contact */
+  .contact-inner .cta{margin-bottom:2rem}
+  .contact-email{font-family:var(--mono);font-size:.82rem;letter-spacing:.02em;color:var(--ink-dim)}
+  .contact-email a{color:var(--bronze);border-bottom:1px solid var(--bronze-dim)}
+
+  /* coda */
+  .coda p:first-child{
+    font-family:var(--serif);font-size:clamp(1.25rem,2.6vw,1.7rem);
+    line-height:1.45;color:var(--ink);max-width:44rem;
+  }
+  .coda-line{
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--bronze);margin-top:2.8rem;
+  }
+
+  /* footer */
+  footer{
+    border-top:1px solid var(--hairline);
+    padding:2rem clamp(1.25rem,4vw,3rem) 3rem;
+    font-family:var(--mono);font-size:.66rem;letter-spacing:.18em;
+    color:var(--ink-dim);
+    position:relative;z-index:10;background:var(--bg);
+  }
+  footer a:hover{color:var(--bronze)}
+</style>
 </head>
 <body>
-<div id="root"></div>
-<script id="site-data" type="application/json">{"entry":"index.html","pathname":"/","routeParams":{}}</script>
+
+<div id="stage" aria-hidden="true"></div>
+
+<header class="masthead">
+  <a class="mark" href="#top">SLANCHA / PRODUCTION AI</a>
+  <nav>
+    <a href="#method">Method</a>
+    <a href="#offer">Sprint</a>
+    <a href="#contact">Start</a>
+  </nav>
+</header>
+
+<section class="hero" id="top">
+  <div class="hero-inner">
+    <span class="plate-label">Plate I · The Instrument</span>
+    <h1>Bring us your most <em>expensive</em> production agent.</h1>
+    <p class="descriptor">Slancha optimizes production AI. We lower cost per verified outcome without lowering the outcome rate.</p>
+    <p class="proofline">One workflow. One metric. One shipped improvement.</p>
+    <a class="cta" href="#contact">Start with one workflow</a>
+  </div>
+  <div class="hero-readout">
+    fog · 14 / 10 / 0c<br>
+    rotation · two-axis · slow<br>
+    graduation · 6°
+  </div>
+</section>
+
+<main class="sheet">
+
+  <section class="plate" id="problem">
+    <span class="plate-label">Plate II · Problem</span>
+    <h2>The enemy is unpriced intelligence.</h2>
+    <p>Your agents resolve real work at machine speed. Do you know what one successful resolution costs?</p>
+    <p>Model teams cut token cost. Infrastructure teams raise utilization. Product teams raise resolution. Operations cuts handle time. Finance cuts budgets. Each team can win while the whole system gets worse — because no one owns the denominator that crosses their boundaries.</p>
+  </section>
+
+  <section class="plate" id="method">
+    <span class="plate-label">Plate III · Method</span>
+    <div class="method-grid">
+      <div>
+        <h2>The loop is the product.</h2>
+        <p>We observe production work. We join spend to a verified result. We find the binding constraint — model, prompt, retrieval, tool policy, retries, caching, or serving. We test a bounded change against a predeclared baseline and quality floor. We ship it with rollback. Then we come back and grade the realized result against the forecast.</p>
+      </div>
+      <figure class="loop-figure">
+        <svg viewBox="0 0 420 340" role="img" aria-label="The loop: measure, change, prove, deploy, grade, repeat">
+          <g class="loop-rotor">
+            <circle cx="210" cy="170" r="115" fill="none" stroke="#c8a24a" stroke-opacity=".55" stroke-width="1" stroke-dasharray="2 5"/>
+            <circle cx="210" cy="170" r="100" fill="none" stroke="#c8a24a" stroke-opacity=".18" stroke-width="1"/>
+            <g stroke="#c8a24a" stroke-opacity=".45" stroke-width="1">
+              <line x1="210" y1="62" x2="210" y2="70"/>
+              <line x1="210" y1="270" x2="210" y2="278"/>
+              <line x1="102" y1="170" x2="110" y2="170"/>
+              <line x1="310" y1="170" x2="318" y2="170"/>
+              <line x1="264" y1="76.5" x2="260" y2="83.4"/>
+              <line x1="303.5" y1="116" x2="296.6" y2="120"/>
+              <line x1="303.5" y1="224" x2="296.6" y2="220"/>
+              <line x1="264" y1="263.5" x2="260" y2="256.6"/>
+              <line x1="156" y1="263.5" x2="160" y2="256.6"/>
+              <line x1="116.5" y1="224" x2="123.4" y2="220"/>
+              <line x1="116.5" y1="116" x2="123.4" y2="120"/>
+              <line x1="156" y1="76.5" x2="160" y2="83.4"/>
+            </g>
+          </g>
+          <path d="M 210 43 l 10 -5 l -3 5 l 3 5 z" fill="#c8a24a" fill-opacity=".8" transform="rotate(30 210 170)"/>
+          <g fill="#c8a24a">
+            <circle cx="210" cy="55" r="3.2"/>
+            <circle cx="309.6" cy="112.5" r="3.2"/>
+            <circle cx="309.6" cy="227.5" r="3.2"/>
+            <circle cx="210" cy="285" r="3.2"/>
+            <circle cx="110.4" cy="227.5" r="3.2"/>
+            <circle cx="110.4" cy="112.5" r="3.2"/>
+          </g>
+          <g fill="none" stroke="#c8a24a" stroke-opacity=".35" stroke-width="1">
+            <circle cx="210" cy="55" r="7"/>
+            <circle cx="309.6" cy="112.5" r="7"/>
+            <circle cx="309.6" cy="227.5" r="7"/>
+            <circle cx="210" cy="285" r="7"/>
+            <circle cx="110.4" cy="227.5" r="7"/>
+            <circle cx="110.4" cy="112.5" r="7"/>
+          </g>
+          <text x="210" y="34" text-anchor="middle">MEASURE</text>
+          <text x="330" y="104" text-anchor="start">CHANGE</text>
+          <text x="330" y="248" text-anchor="start">PROVE</text>
+          <text x="210" y="315" text-anchor="middle">DEPLOY</text>
+          <text x="90" y="248" text-anchor="end">GRADE</text>
+          <text x="90" y="104" text-anchor="end">REPEAT</text>
+          <text class="center-label" x="210" y="166" text-anchor="middle">COST PER</text>
+          <text class="center-label" x="210" y="180" text-anchor="middle">VERIFIED OUTCOME</text>
+        </svg>
+        <figcaption>Fig. 1 · the loop, six stations</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="plate" id="offer">
+    <span class="plate-label">Plate IV · Sprint</span>
+    <h2>The Production AI Optimization Sprint.</h2>
+    <div class="offer-terms"><span>21 days</span><span>$15,000 fixed</span><span>One workflow</span></div>
+    <p>21 days. $15,000, fixed. One production workflow. We establish its true cost per verified successful outcome, test a bounded set of changes, and ship one approved improvement when the evidence supports it.</p>
+    <ul class="offer-list">
+      <li><span class="tick" aria-hidden="true"></span><p>Preregistered baseline and evidence contract</p></li>
+      <li><span class="tick" aria-hidden="true"></span><p>Cost-per-outcome decomposition</p></li>
+      <li><span class="tick" aria-hidden="true"></span><p>Experiment record for every tested change</p></li>
+      <li><span class="tick" aria-hidden="true"></span><p>One reversible shipped improvement, when evidence supports it</p></li>
+      <li><span class="tick" aria-hidden="true"></span><p>Realized-versus-forecast scorecard</p></li>
+      <li><span class="tick" aria-hidden="true"></span><p>Ranked 90-day backlog</p></li>
+    </ul>
+    <p class="no-change">The no-change result stays on the table. Slancha optimizes your system, not its own activity — if the evidence says leave it alone, that is the report.</p>
+  </section>
+
+  <section class="plate" id="proof">
+    <span class="plate-label">Plate V · Proof</span>
+    <h2>How every engagement is graded.</h2>
+    <p>This workflow cost X per successful outcome. Constraint Y caused the waste. We changed Z. The controlled result improved. The quality floor held. The change shipped. The realized result persisted. That grammar — baseline, denominator, outcome definition, quality floor, intervention, experiment design, rollback, forecast, realized — is the standard every engagement must meet.</p>
+    <div class="scorecard" role="list" aria-label="The grammar of an engagement">
+      <div role="listitem"><span class="tick" aria-hidden="true">·</span><span class="term">Baseline</span></div>
+      <div role="listitem"><span class="tick" aria-hidden="true">·</span><span class="term">Denominator</span></div>
+      <div role="listitem"><span class="tick" aria-hidden="true">·</span><span class="term">Outcome definition</span></div>
+      <div role="listitem"><span class="tick" aria-hidden="true">·</span><span class="term">Quality floor</span></div>
+      <div role="listitem"><span class="tick" aria-hidden="true">·</span><span class="term">Intervention</span></div>
+      <div role="listitem"><span class="tick" aria-hidden="true">·</span><span class="term">Experiment design</span></div>
+      <div role="listitem"><span class="tick" aria-hidden="true">·</span><span class="term">Rollback</span></div>
+      <div role="listitem"><span class="tick" aria-hidden="true">·</span><span class="term">Forecast</span></div>
+      <div role="listitem"><span class="tick" aria-hidden="true">·</span><span class="term">Realized</span></div>
+    </div>
+  </section>
+
+  <section class="plate" id="contact">
+    <span class="plate-label">Plate VI · Start</span>
+    <div class="contact-inner">
+      <a class="cta ghost" href="mailto:pauljflogan@gmail.com?subject=Production%20AI%20Optimization%20Sprint">Start with one workflow</a>
+      <p class="contact-email">Write to Paul Logan: <a href="mailto:pauljflogan@gmail.com?subject=Production%20AI%20Optimization%20Sprint">pauljflogan@gmail.com</a> — subject line: Production AI Optimization Sprint.</p>
+    </div>
+  </section>
+
+  <section class="plate coda">
+    <p>We start with one agent because agents already act, spend, and produce measurable outcomes at machine speed. The loop that improves one workflow can improve a fleet. The loop that improves a fleet can improve larger systems — companies, supply chains, infrastructure.</p>
+    <p class="coda-line">Optimize the planet. One measured loop at a time.</p>
+  </section>
+
+</main>
+
+<footer>
+  <a href="#contact">Slancha — production AI, optimized. 2026.</a>
+</footer>
+
+<script type="module">
+import * as THREE from './vendor/three.module.min.js';
+
+const stage = document.getElementById('stage');
+const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const BRONZE = 0xc8a24a;
+const INK = 0xece7de;
+
+let renderer = null;
+try {
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+} catch (e) { renderer = null; }
+
+if (renderer) {
+  const DPR = Math.min(window.devicePixelRatio || 1, 2);
+  renderer.setPixelRatio(DPR);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  stage.appendChild(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(0x14100c, 3.0, 9.0);
+
+  const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 40);
+  const BASE_Z = 4.6;
+  camera.position.set(0, 0, BASE_Z);
+
+  // Materials (fog-aware line + point materials)
+  const lineMat  = new THREE.LineBasicMaterial({ color: BRONZE, transparent: true, opacity: 0.5,  fog: true });
+  const lineDim  = new THREE.LineBasicMaterial({ color: BRONZE, transparent: true, opacity: 0.22, fog: true });
+  const lineInk  = new THREE.LineBasicMaterial({ color: INK,    transparent: true, opacity: 0.16, fog: true });
+  const nodeMat  = new THREE.PointsMaterial({ color: BRONZE, size: 0.035, transparent: true, opacity: 0.95, fog: true });
+  const dustMat  = new THREE.PointsMaterial({ color: BRONZE, size: 0.016, transparent: true, opacity: 0.4,  fog: true });
+
+  // --- helpers -------------------------------------------------------------
+  function ringLoop(radius, segments) {
+    const pts = [];
+    for (let i = 0; i < segments; i++) {
+      const a = (i / segments) * Math.PI * 2;
+      pts.push(new THREE.Vector3(Math.cos(a) * radius, 0, Math.sin(a) * radius));
+    }
+    const geo = new THREE.BufferGeometry().setFromPoints(pts);
+    return new THREE.LineLoop(geo, lineMat);
+  }
+
+  // Graduation ticks around a ring, in its own plane (y = 0)
+  function graduations(radius, count, innerLen, majorEvery, majorLen) {
+    const pos = [];
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * Math.PI * 2;
+      const len = (i % majorEvery === 0) ? majorLen : innerLen;
+      const c = Math.cos(a), s = Math.sin(a);
+      pos.push(c * (radius - len), 0, s * (radius - len));
+      pos.push(c * radius, 0, s * radius);
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    return new THREE.LineSegments(geo, lineMat);
+  }
+
+  function nodePoints(radius, count) {
+    const pos = [];
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * Math.PI * 2;
+      pos.push(Math.cos(a) * radius, 0, Math.sin(a) * radius);
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    return new THREE.Points(geo, nodeMat);
+  }
+
+  // --- the instrument ------------------------------------------------------
+  const instrument = new THREE.Group();
+  scene.add(instrument);
+
+  // Gimbal A: outer graduated ring, horizontal
+  const gimbalA = new THREE.Group();
+  gimbalA.add(ringLoop(1.72, 160));
+  gimbalA.add(graduations(1.72, 60, 0.05, 5, 0.12));
+  gimbalA.add(nodePoints(1.72, 12));
+  instrument.add(gimbalA);
+
+  // Gimbal B: middle ring, tilted
+  const gimbalB = new THREE.Group();
+  const rb = ringLoop(1.38, 140);
+  gimbalB.add(rb);
+  gimbalB.add(graduations(1.38, 36, 0.04, 6, 0.1));
+  gimbalB.add(nodePoints(1.38, 6));
+  gimbalB.rotation.x = Math.PI / 2.6;
+  instrument.add(gimbalB);
+
+  // Gimbal C: inner ring pair, steeper tilt
+  const gimbalC = new THREE.Group();
+  gimbalC.add(ringLoop(1.06, 120));
+  const rc2 = ringLoop(1.06, 120);
+  rc2.rotation.z = Math.PI / 2;
+  gimbalC.add(rc2);
+  gimbalC.add(nodePoints(1.06, 6));
+  gimbalC.rotation.set(Math.PI / 3.4, 0, Math.PI / 5);
+  instrument.add(gimbalC);
+
+  // Meridian cage (dim ink great circles about the polar axis)
+  const cage = new THREE.Group();
+  for (let m = 0; m < 4; m++) {
+    const mer = ringLoop(1.55, 120);
+    mer.material = lineInk;
+    mer.rotation.x = Math.PI / 2;
+    mer.rotation.y = (m / 4) * Math.PI;
+    cage.add(mer);
+  }
+  instrument.add(cage);
+
+  // Polar axis rod with end caps
+  const axisGeo = new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(0, -2.05, 0), new THREE.Vector3(0, 2.05, 0)
+  ]);
+  instrument.add(new THREE.Line(axisGeo, lineDim));
+  const capGeo = new THREE.BufferGeometry();
+  capGeo.setAttribute('position', new THREE.Float32BufferAttribute([0, 2.05, 0, 0, -2.05, 0, 0, 0, 0], 3));
+  instrument.add(new THREE.Points(capGeo, nodeMat));
+
+  // Central core: small octahedron wireframe
+  const core = new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.OctahedronGeometry(0.34)),
+    lineMat
+  );
+  instrument.add(core);
+
+  // Dust field: shell of drifting particles
+  const DUST_N = 900;
+  const dustPos = new Float32Array(DUST_N * 3);
+  for (let i = 0; i < DUST_N; i++) {
+    const r = 2.6 + Math.random() * 5.5;
+    const th = Math.random() * Math.PI * 2;
+    const ph = Math.acos(2 * Math.random() - 1);
+    dustPos[i * 3]     = r * Math.sin(ph) * Math.cos(th);
+    dustPos[i * 3 + 1] = r * Math.cos(ph) * 0.7;
+    dustPos[i * 3 + 2] = r * Math.sin(ph) * Math.sin(th);
+  }
+  const dustGeo = new THREE.BufferGeometry();
+  dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+  const dust = new THREE.Points(dustGeo, dustMat);
+  scene.add(dust);
+
+  // Offset instrument right of hero copy on wide screens
+  function placeInstrument() {
+    const wide = window.innerWidth > 860;
+    instrument.position.x = wide ? 1.15 : 0;
+    dust.position.x = instrument.position.x;
+    instrument.scale.setScalar(wide ? 1 : 0.78);
+  }
+  placeInstrument();
+
+  // --- interaction state ---------------------------------------------------
+  let mouseX = 0, mouseY = 0, tiltX = 0, tiltY = 0;
+  if (!reduced) {
+    window.addEventListener('pointermove', (e) => {
+      mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+      mouseY = (e.clientY / window.innerHeight) * 2 - 1;
+    }, { passive: true });
+  }
+
+  let scrollP = 0;
+  function readScroll() {
+    scrollP = Math.min(window.scrollY / Math.max(window.innerHeight, 1), 1);
+    stage.style.opacity = String(1 - scrollP * scrollP);
+  }
+  readScroll();
+  window.addEventListener('scroll', readScroll, { passive: true });
+
+  window.addEventListener('resize', () => {
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    placeInstrument();
+    if (reduced) renderer.render(scene, camera);
+  });
+
+  // --- animation loop ------------------------------------------------------
+  let hidden = document.hidden;
+  document.addEventListener('visibilitychange', () => {
+    hidden = document.hidden;
+    if (!hidden && !reduced) requestAnimationFrame(tick);
+  });
+
+  const clock = new THREE.Clock();
+  function tick() {
+    if (hidden) return;
+    requestAnimationFrame(tick);
+    if (scrollP >= 0.999) return; // instrument fully receded; skip render
+
+    const t = clock.getElapsedTime();
+
+    // slow two-axis rotation, precise and calm
+    instrument.rotation.y = t * 0.09;
+    instrument.rotation.x = Math.sin(t * 0.05) * 0.14;
+    gimbalB.rotation.z = t * 0.16;
+    gimbalC.rotation.y = -t * 0.12;
+    core.rotation.y = -t * 0.2;
+    core.rotation.x = t * 0.11;
+    dust.rotation.y = t * 0.008;
+
+    // mouse-tilt parallax, eased
+    tiltX += (mouseY * 0.12 - tiltX) * 0.04;
+    tiltY += (mouseX * 0.18 - tiltY) * 0.04;
+    instrument.rotation.x += tiltX;
+    instrument.rotation.y += tiltY;
+
+    // scroll: the instrument recedes into the fog
+    camera.position.z = BASE_Z + scrollP * 4.6;
+    camera.position.y = scrollP * -0.6;
+
+    renderer.render(scene, camera);
+  }
+
+  if (reduced) {
+    // static frame: composed pose, no loop
+    instrument.rotation.set(0.32, 0.7, 0);
+    gimbalB.rotation.z = 0.9;
+    gimbalC.rotation.y = -0.5;
+    renderer.render(scene, camera);
+  } else {
+    requestAnimationFrame(tick);
+  }
+}
+</script>
 </body>
 </html>
