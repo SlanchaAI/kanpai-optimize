@@ -221,7 +221,28 @@ test('whole repository: inventory, offline browser behavior, failure paths and c
               } else {
                 assert.deepEqual(await b.evaluate('observed.scene.children[0].children.slice(0,3).map(g => g.children[0].geometry.attributes.position.count)'), [160, 140, 120]);
               }
+              // Remove time-driven rotation using the dust's shared animation time.
+              // Coarse mode still animates, so raw rotation changes alone prove nothing.
+              const pointerTilt = mode === 'reduced'
+                ? '[observed.scene.children[0].rotation.x, observed.scene.children[0].rotation.y]'
+                : `(() => {
+                    const [instrument, dust] = observed.scene.children;
+                    const time = dust.rotation.y / 0.008;
+                    return ${page.startsWith('non-llm')
+                      ? '[instrument.rotation.x - 0.46, instrument.rotation.y - Math.sin(time * 0.05) * 0.2]'
+                      : '[instrument.rotation.x - Math.sin(time * 0.05) * 0.14, instrument.rotation.y - time * 0.09]'};
+                  })()`;
+              const beforePointer = await b.evaluate(pointerTilt);
+              const beforePointerRenders = await b.evaluate('observed.renders');
               await b.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 1100, y: 700 });
+              if (mode === 'reduced') await new Promise(r => setTimeout(r, 120));
+              else await waitFor(b, `observed.renders >= ${beforePointerRenders + 20}`);
+              const afterPointer = await b.evaluate(pointerTilt);
+              for (const [axis, i] of [['x', 0], ['y', 1]]) {
+                const change = afterPointer[i] - beforePointer[i];
+                if (mode === 'animated') assert.ok(change > 0.02, `Pointer changes ${axis} tilt`);
+                else assert.ok(Math.abs(change) < 1e-9, `${mode}: pointer leaves ${axis} tilt unchanged`);
+              }
               await b.evaluate('window.scrollTo(0, 400)');
               await waitFor(b, 'Math.abs(Number(document.getElementById("stage").style.opacity) - 0.75) < 0.01');
               if (mode !== 'reduced') await waitFor(b, 'Math.abs(observed.camera.position.z - 6.9) < 0.02');
