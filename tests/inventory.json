@@ -1,0 +1,66 @@
+{
+  "index.html": {
+    "kind": "application",
+    "reason": "Animated gimbal, reduced/coarse motion, lifecycle/resize/context restore and WebGL failure; real Chrome precise coverage."
+  },
+  "non-llm/index.html": {
+    "kind": "application",
+    "reason": "Oscillograph signal geometry, reduced/coarse motion, lifecycle/resize/context restore and WebGL failure; real Chrome precise coverage."
+  },
+  "vendor/three-slim.module.js": {
+    "kind": "vendor",
+    "reason": "Vendored Three.js implementation; exercised through real rendering but not first-party coverage target."
+  },
+  ".wrangler/cache/wrangler-account.json": {
+    "kind": "cache",
+    "reason": "Existing generated Wrangler account metadata; not executable, never read by tests."
+  },
+  ".agents/product-marketing.md": {
+    "kind": "documentation",
+    "reason": "Marketing context; no executable code."
+  },
+  "PRODUCT.md": {
+    "kind": "documentation",
+    "reason": "Product design brief; no executable code."
+  },
+  "README.md": {
+    "kind": "documentation",
+    "reason": "Release provenance and regeneration guidance; no executable code."
+  },
+  "_headers": {
+    "kind": "configuration",
+    "reason": "Static hosting response headers; no executable code."
+  },
+  "wrangler.toml": {
+    "kind": "configuration",
+    "reason": "Static asset hosting manifest; no worker or build command."
+  },
+  ".assetsignore": {
+    "kind": "configuration",
+    "reason": "Static deployment file exclusions."
+  },
+  ".gitignore": {
+    "kind": "configuration",
+    "reason": "Local test outputs excluded from version control."
+  },
+  ".github/workflows/whole-tests.yml": {
+    "kind": "configuration",
+    "reason": "CI calls verifier and publishes coverage artifacts."
+  },
+  "tests/whole.test.mjs": {
+    "kind": "test",
+    "reason": "Node test entry point executes browser transport, HTTP server, inventory audit and coverage checks; negative checks cover unknown/missing inventory files, CDP errors, JS errors and HTTP 404."
+  },
+  "tests/verify_whole_tests.sh": {
+    "kind": "test",
+    "reason": "Local/CI entry point; executes version checks and complete Node suite; missing browser fails before tests."
+  },
+  "tests/inventory.json": {
+    "kind": "configuration",
+    "reason": "Exhaustive per-file inventory and executable-to-test mapping; audited against git tracked and unignored files."
+  },
+  "tests/README.md": {
+    "kind": "documentation",
+    "reason": "Test commands, coverage contract and exclusions rationale."
+  }
+}

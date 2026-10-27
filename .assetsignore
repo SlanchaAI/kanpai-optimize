@@ -15,3 +15,8 @@ vendor/three.module.min.js
 .tumble-dry
 .tumble-dry/**
 .agents/**
+tests/**
+.github/**
+coverage/**
+.test-tmp/**
+.gitignore

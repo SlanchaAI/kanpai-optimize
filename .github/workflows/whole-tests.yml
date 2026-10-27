@@ -1,0 +1,23 @@
+name: Whole repository tests
+on:
+  pull_request:
+  push:
+    branches: [deploy]
+permissions:
+  contents: read
+jobs:
+  whole-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+      - run: bash tests/verify_whole_tests.sh
+      - uses: actions/upload-artifact@v7.0.2
+        if: always()
+        with:
+          name: whole-tests-coverage-and-inventory
+          path: coverage/
+          if-no-files-found: error
